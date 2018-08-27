@@ -1,0 +1,71 @@
+---
+- hosts: all
+  become: true
+  remote_user: centos
+
+  tasks:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: Install Nginx rpm
+      yum:
+        name: http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
+        state: present
+
+    - name: Install Nginx
+      yum:
+        name: nginx-1.14.0
+        state: present
+
+    - name: Install MySQL client
+      yum:
+        name: mysql
+        state: present
+
+    # install nodejs
+    - name: Download node installer
+      get_url: url=https://rpm.nodesource.com/setup_8.x dest=/tmp/node-installer.sh
+
+    - file:
+        path: /tmp/node-installer.sh
+        mode: "o+x"
+
+    - name: Execute node installer
+      shell: /tmp/node-installer.sh
+
+    - name: Remove node installer
+      file: path=/tmp/node-installer.sh state=absent
+
+    - name: Install nodejs
+      yum:
+        name: nodejs
+        state: present
+
+    - name: Install package.json dependencies for client
+      npm:
+        path: /vagrant/client
+        executable: /usr/bin/npm
+        state: present
+
+    - name: Deploy client
+      shell: npm run build
+      args:
+        chdir: /vagrant/client
+
+    # nginx configs
+    - name: Copy virtual host files
+      copy:
+        src: "./files/nginx/{{item}}.conf"
+        dest: /etc/nginx/conf.d/
+      with_items:
+        - default
+        - amazonaws1.com
+        - amazonaws2.com
+
+    - name: Restart Services
+      service:
+        name: "{{item}}"
+        state: restarted
+      with_items:
+        - nginx
