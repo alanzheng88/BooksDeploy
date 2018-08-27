@@ -1,6 +1,6 @@
-[submodule "BooksFrontend"]
-	path = BooksFrontend
+[submodule "client"]
+	path = client
 	url = git@github.com:alanzheng88/BooksFrontend.git
-[submodule "BooksBackend"]
-	path = BooksBackend
+[submodule "server"]
+	path = server
 	url = git@github.com:alanzheng88/BooksBackend.git
