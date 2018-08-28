@@ -24,6 +24,7 @@ Vagrant.configure("2") do |config|
     aws.keypair_name = ENV['AWS_KEYPAIR_NAME']
     aws.region = 'us-west-2'
     aws.instance_type = 't2.micro'
+    aws.terminate_on_shutdown = false
 
     # CentOS 7 (x86_64) - with Updates HVM
     aws.ami = "ami-3ecc8f46"
@@ -38,6 +39,7 @@ Vagrant.configure("2") do |config|
 
   # Run Ansible from Vagrant host
   config.vm.provision :ansible do |ansible|
+    ansible.compatibility_mode = "2.0"
     ansible.playbook = "ansible/playbook.yml"
   end
 end

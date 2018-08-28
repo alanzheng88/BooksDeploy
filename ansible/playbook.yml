@@ -1,60 +1,111 @@
 ---
 - hosts: all
-  become: true
   remote_user: centos
 
   tasks:
     - name: Disable SELinux
+      become: true
       selinux:
         state: disabled
 
     - name: Install Nginx rpm
+      become: true
       yum:
         name: http://nginx.org/packages/centos/7/noarch/RPMS/nginx-release-centos-7-0.el7.ngx.noarch.rpm
         state: present
 
     - name: Install Nginx
+      become: true
       yum:
         name: nginx-1.14.0
         state: present
 
     - name: Install MySQL client
+      become: true
       yum:
         name: mysql
         state: present
 
-    # install nodejs
+    # Set up client
     - name: Download node installer
-      get_url: url=https://rpm.nodesource.com/setup_8.x dest=/tmp/node-installer.sh
-
-    - file:
-        path: /tmp/node-installer.sh
-        mode: "o+x"
+      become: true
+      get_url:
+        url: https://rpm.nodesource.com/setup_8.x
+        dest: /tmp/node-installer.sh
+        mode: 0700
 
     - name: Execute node installer
+      become: true
+      become_user: root
       shell: /tmp/node-installer.sh
 
     - name: Remove node installer
+      become: true
       file: path=/tmp/node-installer.sh state=absent
 
     - name: Install nodejs
+      become: true
       yum:
         name: nodejs
         state: present
 
     - name: Install package.json dependencies for client
+      become: true
       npm:
         path: /vagrant/client
         executable: /usr/bin/npm
         state: present
 
     - name: Deploy client
+      become: true
       shell: npm run build
       args:
         chdir: /vagrant/client
 
+    # Set up server
+    - name: Enable epel repository
+      become: true
+      yum:
+        name: epel-release
+        state: present
+
+    - name: Install python3 and tools
+      become: true
+      yum:
+        name: "{{item}}"
+        state: present
+      with_items:
+        - python36
+        - python36-setuptools
+        - mariadb-devel
+        - "@Development Tools"
+        - python36-devel
+
+    - name: Install pip3
+      become: true
+      shell: easy_install-3.6 pip
+
+    - name: Install backend app dependencies
+      become: true
+      shell: /usr/local/bin/pip3 install -r requirements.txt
+      args:
+        chdir: /vagrant/server
+
+    - name: Configure db access settings
+      become: true
+      copy:
+        src: "../my.cnf"
+        dest: /etc/my.cnf.d/
+        mode: 0644
+
+    - name: Set up environment
+      shell: source ./.env-development && ./scripts/configure
+      args:
+        chdir: /vagrant/server 
+
     # nginx configs
     - name: Copy virtual host files
+      become: true
       copy:
         src: "./files/nginx/{{item}}.conf"
         dest: /etc/nginx/conf.d/
@@ -64,6 +115,7 @@
         - amazonaws2.com
 
     - name: Restart Services
+      become: true
       service:
         name: "{{item}}"
         state: restarted

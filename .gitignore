@@ -3,3 +3,4 @@ AlanLaptop.pem
 .vagrant
 .DS_Store
 connect
+my.cnf
