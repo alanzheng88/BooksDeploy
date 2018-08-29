@@ -9,5 +9,11 @@ vagrant up --provider=aws
 
 ### Temporary solution for running backend server
 ```
-source .env-development && DATABASE_URL="$DATABASE_URL" PORT=8000 python36 manage.py run
+screen
+
+(source ./.env-development && DATABASE_URL="$DATABASE_URL" PORT=8000 python36 manage.py run) &
+
+ctrl+a+d
+
+exit
 ```
