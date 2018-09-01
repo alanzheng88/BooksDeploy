@@ -99,7 +99,7 @@
         mode: 0644
 
     - name: Set up environment
-      shell: source ./.env-development && ./scripts/configure
+      shell: source ./.env-production && ./scripts/configure
       args:
         chdir: /vagrant/server 
 

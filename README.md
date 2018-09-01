@@ -11,7 +11,7 @@ vagrant up --provider=aws
 ```
 screen
 
-(source ./.env-development && DATABASE_URL="$DATABASE_URL" PORT=8000 python36 manage.py run) &
+(source ./.env-production && DATABASE_URL="$DATABASE_URL" PORT=8000 python36 manage.py run) &
 
 ctrl+a+d
 
