@@ -103,6 +103,11 @@
       args:
         chdir: /vagrant/server 
 
+    - name: Run HTTP backend server
+      shell: source ./.env-production && APP_ENV=prod PORT=8000 DATABASE_URL="$DATABASE_URL" gunicorn manage:app & disown
+      args:
+        chdir: /vagrant/server
+
     # nginx configs
     - name: Copy virtual host files
       become: true
