@@ -7,13 +7,3 @@ vagrant box add dummy https://github.com/mitchellh/vagrant-aws/raw/master/dummy.
 vagrant up --provider=aws
 ```
 
-### Temporary solution for running backend server
-```
-screen
-
-(source ./.env-production && DATABASE_URL="$DATABASE_URL" PORT=8000 python36 manage.py run) &
-
-ctrl+a+d
-
-exit
-```
