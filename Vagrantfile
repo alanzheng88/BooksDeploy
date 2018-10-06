@@ -35,6 +35,7 @@ Vagrant.configure("2") do |config|
     override.nfs.functional = false
     # /vagrant folder will be synced by default for aws
     override.vm.allowed_synced_folder_types = [:rsync]
+    override.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: [".git/", "client/node_modules/"]
   end
 
   # Run Ansible from Vagrant host
