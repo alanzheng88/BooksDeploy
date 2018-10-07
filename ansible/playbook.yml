@@ -126,3 +126,22 @@
         state: restarted
       with_items:
         - nginx
+
+    # set up codedeploy agent
+    - name: Install agent dependencies
+      become: true
+      yum:
+        name: "{{item}}"
+        state: present
+      with_items:
+        - ruby
+        - wget
+
+    - name: Download and run installer script
+      become: true
+      shell: "{{item}}"
+      args:
+        chdir: /home/centos
+      with_items:
+        - source /vagrant/.env && wget https://${AWS_BUCKET_NAME}.s3.amazonaws.com/latest/install && chmod +x ./install
+        - ./install auto

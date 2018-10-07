@@ -22,6 +22,10 @@ Vagrant.configure("2") do |config|
     aws.subnet_id = ENV['AWS_SUBNET_ID']
     aws.elastic_ip = ENV['AWS_ELASTIC_IP']
     aws.keypair_name = ENV['AWS_KEYPAIR_NAME']
+    aws.iam_instance_profile_name = ENV['AWS_IAM_INSTANCE_PROFILE']
+    aws.tags = {
+      'Application Role' => 'webserver'
+    }
     aws.region = 'us-west-2'
     aws.instance_type = 't2.micro'
     aws.terminate_on_shutdown = false
@@ -34,7 +38,6 @@ Vagrant.configure("2") do |config|
     override.ssh.private_key_path = ENV['AWS_PRIVATE_KEY_PATH']
     override.nfs.functional = false
     # /vagrant folder will be synced by default for aws
-    override.vm.allowed_synced_folder_types = [:rsync]
     override.vm.synced_folder ".", "/vagrant", type: "rsync", rsync__exclude: [".git/", "client/node_modules/"]
   end
 
